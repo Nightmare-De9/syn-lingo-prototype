@@ -1,4 +1,4 @@
-# SynLingo (Prototype)
+<h2 align="center">SynLingo (Prototype)</h2>
 
 **SynLingo Beta** is a prototype web-based application designed to perform **real-time Indian Sign Language (ISL) hand gesture recognition** using a live webcam feed.  
 The project aims to explore how artificial intelligence and computer vision can be used to improve accessibility and communication for the hearing- and speech-impaired community.
