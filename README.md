@@ -1,6 +1,6 @@
 # SynLingo (Prototype)
 
-**SynLingo** is a prototype web-based application designed to perform **real-time Indian Sign Language (ISL) hand gesture recognition** using a live webcam feed.  
+**SynLingo Beta** is a prototype web-based application designed to perform **real-time Indian Sign Language (ISL) hand gesture recognition** using a live webcam feed.  
 The project aims to explore how artificial intelligence and computer vision can be used to improve accessibility and communication for the hearing- and speech-impaired community.
 
 This project was developed as part of a **Class 11 Artificial Intelligence (AI) project**.
@@ -9,9 +9,7 @@ This project was developed as part of a **Class 11 Artificial Intelligence (AI) 
 
 ## 📌 Project Overview
 
-SynLingo captures live video from a user’s webcam, extracts individual frames, and sends them to a **pretrained Roboflow computer vision model** for inference. The model predicts the corresponding ISL alphabet and displays the result in real time on a single-page static web application.
-
-The application does **not require a backend server** and does **not use TensorFlow or OpenCV**, making it lightweight and easy to deploy for educational demonstrations.
+SynLingo captures live video from a user’s webcam, extracts individual frames, and sends them to a **computer vision model** for inference. The model predicts the corresponding ISL alphabet and displays the result in real time on a web application.
 
 ---
 
@@ -67,20 +65,6 @@ This project was developed by:
 **Subject:** Artificial Intelligence  
 
 Each team member contributed to research, development, testing, and documentation of the project.
-
----
-
-## 🚀 Future Developments
-
-The current version of SynLingo is a prototype. Possible future enhancements include:
-
-- Support for **full words and sentences**, not just alphabets
-- Improved accuracy with a larger and more diverse dataset
-- Real-time bounding box visualization for detected gestures
-- Gesture-to-text and text-to-speech conversion
-- Mobile-friendly and offline version using edge models
-- Secure backend to protect API keys
-- Multilingual sign language support
 
 ---
 
