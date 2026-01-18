@@ -2,72 +2,143 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>ISL Live Detection</title>
+  <title>SynLingo (Prototype)</title>
+
   <style>
     body {
-      text-align: center;
-      font-family: Arial, sans-serif;
+      margin: 0;
+      font-family: "Segoe UI", sans-serif;
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
+
+    .container {
+      background: rgba(0, 0, 0, 0.35);
+      padding: 25px 30px;
+      border-radius: 16px;
+      width: 360px;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 26px;
+      font-weight: 600;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      opacity: 0.85;
+      margin-bottom: 15px;
+    }
+
     video {
-      border: 2px solid black;
+      width: 100%;
+      border-radius: 12px;
+      border: 2px solid rgba(255,255,255,0.4);
+      margin-top: 10px;
+    }
+
+    .prediction-box {
+      margin-top: 15px;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 10px;
+      font-size: 18px;
+      font-weight: 500;
+    }
+
+    .footer {
+      margin-top: 18px;
+      font-size: 12px;
+      opacity: 0.85;
+      line-height: 1.4;
+    }
+
+    canvas {
+      display: none;
     }
   </style>
 </head>
+
 <body>
 
-<h2>ISL Live Hand Detection</h2>
+<div class="container">
+  <h1>SynLingo (Prototype)</h1>
+  <div class="subtitle">Real-time ISL Hand Gesture Recognition</div>
 
-<video id="video" width="320" height="240" autoplay></video>
-<canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
+  <video id="video" autoplay muted></video>
+  <canvas id="canvas" width="320" height="240"></canvas>
 
-<h3 id="result">Waiting...</h3>
+  <div class="prediction-box" id="result">
+    Waiting for gesture...
+  </div>
+
+  <div class="footer">
+    Developed by <b>Vishwajith, Drishti, Saumya & Manya</b><br>
+    Class 11 – AI Project
+  </div>
+</div>
 
 <script>
-const API_KEY = "XTafEtrfaIn5WlTgQiAY";
-const MODEL_URL = "https://serverless.roboflow.com/isl-45ew9/2";
+  const API_KEY = "XTafEtrfaIn5WlTgQiAY";
+  const MODEL_URL = "https://serverless.roboflow.com/isl-45ew9/2";
 
-const video = document.getElementById("video");
-const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d");
-const result = document.getElementById("result");
+  const video = document.getElementById("video");
+  const canvas = document.getElementById("canvas");
+  const ctx = canvas.getContext("2d");
+  const result = document.getElementById("result");
 
-// Start camera
-navigator.mediaDevices.getUserMedia({ video: true })
-  .then(stream => video.srcObject = stream)
-  .catch(err => alert("Camera error"));
+  // Start webcam
+  navigator.mediaDevices.getUserMedia({ video: true })
+    .then(stream => {
+      video.srcObject = stream;
+    })
+    .catch(() => {
+      result.innerText = "Camera access denied";
+    });
 
-// Capture frame & send to Roboflow
-async function detect() {
-  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+  async function detect() {
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-  const base64Image = canvas
-    .toDataURL("image/jpeg")
-    .replace(/^data:image\/jpeg;base64,/, "");
+    const imageBase64 = canvas
+      .toDataURL("image/jpeg")
+      .replace(/^data:image\/jpeg;base64,/, "");
 
-  const response = await fetch(
-    `${MODEL_URL}?api_key=${API_KEY}`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded"
-      },
-      body: base64Image
+    try {
+      const response = await fetch(
+        `${MODEL_URL}?api_key=${API_KEY}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          body: imageBase64
+        }
+      );
+
+      const data = await response.json();
+
+      if (data.predictions && data.predictions.length > 0) {
+        const p = data.predictions[0];
+        result.innerText =
+          `Detected: ${p.class} (${(p.confidence * 100).toFixed(1)}%)`;
+      } else {
+        result.innerText = "No gesture detected";
+      }
+
+    } catch (err) {
+      result.innerText = "Prediction error";
     }
-  );
-
-  const data = await response.json();
-
-  if (data.predictions && data.predictions.length > 0) {
-    const p = data.predictions[0];
-    result.innerText =
-      `Prediction: ${p.class} (${(p.confidence * 100).toFixed(1)}%)`;
-  } else {
-    result.innerText = "No hand detected";
   }
-}
 
-// Run detection every 1 second
-setInterval(detect, 1000);
+  // Run detection every second
+  setInterval(detect, 1000);
 </script>
 
 </body>
